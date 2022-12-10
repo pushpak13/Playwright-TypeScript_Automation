@@ -120,7 +120,7 @@ test.only("NestedFrame", async({page}) => {
    await page.waitForTimeout(2000);
    const priceList = await page.locator("//div[@class='inventory_item_price']").allTextContents();
    var newPriceList = priceList.map(string => string.replace("$",""));
-   var int = priceList.map(parseFloat);   
+   var int = newPriceList.map(parseFloat);   
    console.log(int);
    let lowestPrice = int[0];
    for(let i = 1; i < int.length; i++) {

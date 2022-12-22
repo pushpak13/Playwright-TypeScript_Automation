@@ -3,8 +3,8 @@ import envConfig from "../../utils/envConfig";
 
 test.describe("UploadFile", async() => {
   let page: Page;
-    let browser: Browser;
-    let context: BrowserContext;
+  let browser: Browser;
+  let context: BrowserContext;
 
     test.beforeAll(async({browser}) => {
       context = await browser.newContext();
@@ -14,25 +14,25 @@ test.describe("UploadFile", async() => {
     })
 
     test.afterAll(async({browser}) => {
-        await browser.close();
+       await browser.close();
     })
 
-    test.only("UploadFile(Any of the Supported type)",async () => {
+    test("UploadFile(Any of the Supported type)",async () => {
         await page.waitForLoadState();
         await page.locator("text=File Upload").click();
         const [uploadFile] = await Promise.all([
             page.waitForEvent("filechooser"),
             page.click("//input[@type='file']")
           ])
-          uploadFile.setFiles("info.txt");
+          uploadFile.setFiles(envConfig.filePath_txt_file);
           await page.click("input[value='Upload It!']");
-          await expect(page.locator("//div[text()='File upload complete']")).toHaveText("File upload complete")
+          await expect(page.locator("//*[@class='wpcf7-response-output']")).toHaveText("File upload complete");
    
   })
 
-    //To verify upload file functionality w.r.t to size condition
-    //File size of 1MB
-    test("Upload file of size 1MB",async () => {
+    //To verify upload file functionality w.r.t to File Size
+    //File size of 1MB-Test should upload file
+    test.only("Upload file of size 1MB",async () => {
         await page.waitForLoadState();
         await page.locator("text=File Upload").click();
         const [uploadFile] = await Promise.all([
@@ -41,16 +41,13 @@ test.describe("UploadFile", async() => {
           ])
           uploadFile.setFiles(envConfig.filePath_1MB);
           await page.click("input[value='Upload It!']");
-          const successMsg = await page.locator("//div[@class='wpcf7-response-output']");
-          if(expect(successMsg).toHaveText("File upload complete")) {
-            console.log("File uploaded successfully");
-          } else{
-            console.log("File upload failed");
-          }
+          await expect(page.locator("//*[@class='wpcf7-response-output']")).toHaveText("File upload complete");
+   
+          
 
           
     })
-    //More than 1MB
+    //More than 1MB-Test should not upload file
     test("Upload file more than 1MB ",async () => {
         await page.waitForLoadState();
         await page.locator("text=File Upload").click();
@@ -60,22 +57,13 @@ test.describe("UploadFile", async() => {
           ])
           uploadFile.setFiles(envConfig.filePath_greaterthan_1MB);
           await page.click("input[value='Upload It!']");
-          const fileSizeMsg = await page.locator("//span[@class='wpcf7-not-valid-tip']");
-          if(expect(fileSizeMsg).toHaveText("Uploaded file is too big.")) {
-            console.log("File upload not allowed for more than 1MB");
-          }else{
-            console.log("File upload allowed");
-          }
-          const errorMsg = await page.locator("//div[@class='wpcf7-response-output']");
-          if(expect(errorMsg).toHaveText("One or more fields have an error. Please check and try again.")) {
-            console.log("File upload failed");
-          }else{
-            console.log("File upload successful");
-          }
+          await page.waitForTimeout(10000);
+          await expect(page.locator("//*[@class='wpcf7-not-valid-tip']")).toHaveText("Uploaded file is too big.");
+          await expect(page.locator("//*[@class='wpcf7-response-output']")).toHaveText("One or more fields have an error. Please check and try again.")
 
     })
 
-    //Verify file upload for unsupported file type
+    //Verify file upload for unsupported file type-Test should not upload file
     test("Upload file of unsupported file type ",async () => {
         await page.waitForLoadState();
         await page.locator("text=File Upload").click();
@@ -85,18 +73,9 @@ test.describe("UploadFile", async() => {
           ])
           uploadFile.setFiles(envConfig.filePath_unSupported_fileType);
           await page.click("input[value='Upload It!']");
-          const warningMsg = await page.locator("//span[@class='wpcf7-not-valid-tip']");
-          if(expect(warningMsg).toHaveText("You are not allowed to upload files of this type.")) {
-            console.log("File upload not allowed for unsupported file type");
-          }else{
-            console.log("File upload allowed");
-          }
-          const errorMsg = await page.locator("//div[@class='wpcf7-response-output']");
-          if(expect(errorMsg).toHaveText("One or more fields have an error. Please check and try again.")) {
-            console.log("File upload failed");
-          }else{
-            console.log("File upload successful");
-          }
+          await expect(page.locator("//*[@class='wpcf7-not-valid-tip']")).toHaveText("You are not allowed to upload files of this type.");
+          await expect(page.locator("//*[@class='wpcf7-response-output']")).toHaveText("One or more fields have an error. Please check and try again.")
+
 
     })
 

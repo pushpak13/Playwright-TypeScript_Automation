@@ -18,20 +18,25 @@ const config: PlaywrightTestConfig = {
       },*/
 
     ],
-    testDir: './tests/Files/',
+    testDir: './fixtures/',
     
     use: {
       //baseURL: "https://www.saucedemo.com/",
       headless: false,
-      screenshot: "on",
+      screenshot: "off",
       video: "off",
+      contextOptions: {
+        recordVideo: {
+          dir: "playwright-report/"
+        },
+      },
       ignoreHTTPSErrors: true,
       launchOptions: {
         slowMo: 100
       },
       viewport: {width: 1366, height:768}
     },
-    //testMatch: ["test.ts"],
+    testMatch: ["SauceDemo.test.ts"],
     reporter: [["dot"], ["json", {
       outputFile: "jsonReports/jsonReport.json"
     }], ["html", {

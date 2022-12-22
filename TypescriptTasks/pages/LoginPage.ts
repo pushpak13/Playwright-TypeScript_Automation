@@ -111,6 +111,7 @@ export default class LoginPage{
 }
 
     public async login(username, password) {
+        await this.page.waitForLoadState();
         await this.page.locator("input[name='user-name']").type(username);
         await this.page.locator("input[name='password']").type(password);
         await this.page.click("input[value='Login']");
